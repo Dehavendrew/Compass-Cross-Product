@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang = "en">
+	<head>
+		<title>Compass Cross Product </title>
+		<style type="text/css">
+		#box{
+			left: 1.75in;
+			top: 3.5in;
+			border: 2px solid black;
+			width: 100px;
+			position: absolute;
+			height: 25px;
+			background-color: white;
+			text-align: center;
+
+		}
+		#square1{
+			position: absolute;
+			width: 100px;
+			height: 25px;
+			background-color: green;
+			text-align: center;
+			left: 170px;
+			top: 338px;
+			visibility: hidden;
+		}
+		#square2{
+			position: absolute;
+			width: 100px;
+			height: 25px;
+			background-color: red;
+			left: 170px;
+			top: 338px;
+			visibility: hidden;
+		}
+		#square3{
+			position: absolute;
+			width: 100px;
+			height: 25px;
+			background-color: yellow;
+			left: 170px;
+			top: 338px;
+			text-align: center;
+			visibility: hidden;
+		}
+		#top{
+			background-color: blue;
+			line-height: 30pt;
+			padding-left: 5px;
+		}
+		#text{
+			font-size: 20pt;
+			line-height: 20pt;
+		}
+		#button1{
+			width: .8in;
+			left: 5in;
+			text-align: center;
+		}
+    #button{
+			width:.8in;
+		}
+		#line{
+			width: 3in;
+			height: .5in;
+		}
+	</style>
+
+
+	</head>
+
+	<body>
+		<h1 id = top>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+			Cross Products
+		</h1>
+
+		<p>
+			<button type="button" name="new problem"
+			 onclick="newprob();">New Problem</button>
+		 </br>
+	 </br>
+			Use the right hand rule to calculate the cross product of the two cardinal directions.
+	  </p>
+
+	  <p id = text>
+		<script type = "text/javascript">
+
+		function newprob(){
+				document.location.reload()
+		}
+
+		directions = new Array("North","Northeast","East","Southeast","South","Southwest","West","NorthWest","Up","Down","Zero")
+		vectors = new Array("[-1,0,0]","[-1,1,0]","[0,1,0]","[1,1,0]","[1,0,0]","[1,-1,0]","[0,-1,0]","[-1,-1,0]","[0,0,1]","[0,0,-1]","[0,0,0]")
+
+		i = Math.floor(Math.random() * 10)
+		j = Math.floor(Math.random() * 10)
+
+
+		function cross(){
+				var sageCode = 	"a =vector(" + vectors[i] + ")\n" +
+												"b =vector(" + vectors[j] + ")\n"+
+												"print(a.cross_product(b))";
+				return sageCode
+		}
+
+		document.write("If \\(\\vec u\\) points " + directions[i] + " and \\(\\vec v\\) points " +	directions[j] + " where does \\(\\vec u \\times \\vec v\\) point?")
+
+		var answer = "[0,0,0]"
+		var xhr = new XMLHttpRequest();
+
+		xhr.open( 'POST', 'https://sagecell.sagemath.org/service', false );
+		xhr.onload = function(){
+
+			var data = JSON.parse( xhr.response);
+			//var data_array = data_string.split('\n')
+			answer = data.stdout;
+
+		}
+
+		xhr.setRequestHeader( 'content-type','application/x-www-form-urlencoded');
+		xhr.send('code=' + encodeURIComponent(cross()));
+
+		function show(){
+			var temp = ""
+			for(var i = 0; i < directions.length; ++i){
+				if(isequal(getIJK(vectors[i]),getIJK(answer))){
+					temp = directions[i]
+				}
+			}
+			square3.style.visibility = "visible"
+			square3.innerHTML = temp
+		}
+		function getIJK(x){
+			var spot = 0
+			components = new Array()
+			for(var i = 0; i < x.length; ++i){
+				if(x[i] == ')'){
+					return components
+				}
+				if(x[i] == '' || x[i] == ' '){
+					continue
+				}
+				if(!isNaN(x[i])){
+					if(x[i] == 2){
+						compenents.push(1)
+						++spot
+						if(x[i-1] == '-'){
+							components[spot] *= -1;
+						}
+						continue
+					}
+					components.push(x[i])
+					if(x[i-1] == '-'){
+						components[spot] *= -1;
+					}
+					++spot
+				}
+			}
+			return components
+		}
+
+		function isequal(x,y){
+			for(var i = 0; i < x.length; ++i){
+				if(x[i] != y[i]){
+					return false
+				}
+			}
+			return true
+		}
+
+		function check(x){
+				if(isequal(getIJK(x),getIJK(answer))){
+						square2.style.visibility = "hidden"
+					square1.style.visibility = "visible"
+				}
+				else{
+					square2.style.visibility = "visible"
+				}
+		}
+
+		</script>
+
+		</p>
+
+			<p id = text>
+				<button type="button" name="up" id = button
+			   onclick="check('(0,0,1)');">Up</button>
+				<button type="button" name="north"id = button
+	 		   onclick="check('(-1,0,0)');">North</button>
+				<button type="button" name="east"id = button
+	 		   onclick="check('(0,1,0)');">East</button>
+				<button type="button" name="northeast"id = button
+ 			   onclick="check('(-1,1,0)');">Northeast</button>
+ 				<button type="button" name="southeast"id = button
+ 	 		   onclick="check('(1,1,0)');">Southeast</button>
+			 </br>
+ 				<button type="button" name="down"id = button
+ 	 		   onclick="check('(0,0,-1)');">Down</button>
+				<button type="button" name="south"id = button
+				 onclick="check('(1,0,0)');">South</button>
+				<button type="button" name="west"id = button
+			   onclick="check('(0,-1,0)');">West</button>
+				<button type="button" name="northwest"id = button
+				 onclick="check('(-1,-1,0)');">Northwest</button>
+				<button type="button" name="southwest"id = button
+				 onclick="check('(1,-1,0)\n');">Southwest</button>
+
+			 </br>
+				 <button type="button" name="zero"id = button
+ 				 onclick="check('(0,0,0)');">Zero</button>
+
+
+	</p>
+	</body>
+	<div id = "line">
+		<button type="button" name="hint"id = button
+		 onclick="cross(1);">Hint</button>
+		 <button type="button" name="show"id = button1
+	 	onclick="show();">Show</button>
+		<div id = box>
+			Result
+		</div>
+		<div id= "square1">
+			Correct
+		</div>
+		<div id = "square2">
+			Try Again
+		</div>
+		<div id = "square3">
+		</div>
+	</div>
+
+
+</html>
